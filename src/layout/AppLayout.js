@@ -5,7 +5,10 @@ function AppLayout({children}){
     return(
         <>
        <Header/>
+       <br />
        {children}
+       <br/>
+       <br/>
        <Footer/>
        </>
       

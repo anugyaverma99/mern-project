@@ -1,4 +1,4 @@
-function DashBoard(){
+function Dashboard(){
     return (
         <>
         <div className="container text-center">
@@ -7,3 +7,4 @@ function DashBoard(){
         </>
     );
 }
+export default Dashboard;

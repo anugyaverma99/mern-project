@@ -1,6 +1,7 @@
-import {React,useState,useNavigate} from 'react';
+import {React,useState} from 'react';
+import {useNavigate} from "react-router-dom";
 
-function Login() {
+function Login({updateUserDetails}) {
     const navigate=useNavigate();
     const [FormData,setFormData]=useState({
         username:"",
@@ -40,17 +41,26 @@ function Login() {
     const handleSubmit=(e)=>{
         e.preventDefault();// prevent default behaviour of html which is to re-load form on submission
         if(validate()){
-            if(FormData.username==='admin' && FormData.password==='admin'){
-                setMessage("login successful");
-            }
-            else{
-                setMessage("Invalid Credentials");
-            }
+            // if(FormData.username==='admin' && FormData.password==='admin'){
+            //     updateUserDetails({
+            //         name:'John Cena',
+            //         email:'john@cena.com'
+
+            //     });
+            //      navigate('/dashboard'); 
+            // }
+            // else{
+            //     setMessage("Invalid Credentials");
+            // }
+
+            // INTEGRATE WITH REST ENDPOINTS
+
+            await axios.post();
         }
     };
 
   return (
-    <div classnaem="container text-center">
+    <div className="container text-center">
       <h1> Login Page</h1>
       {message && (
         message
