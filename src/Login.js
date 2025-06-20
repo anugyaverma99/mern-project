@@ -1,6 +1,6 @@
 import {React,useState} from 'react';
 import {useNavigate} from "react-router-dom";
-
+import axios from 'axios';
 function Login({updateUserDetails}) {
     const navigate=useNavigate();
     const [FormData,setFormData]=useState({
@@ -38,7 +38,7 @@ function Login({updateUserDetails}) {
         }
 
    
-    const handleSubmit=(e)=>{
+    const handleSubmit=async(e)=>{
         e.preventDefault();// prevent default behaviour of html which is to re-load form on submission
         if(validate()){
             // if(FormData.username==='admin' && FormData.password==='admin'){
@@ -55,7 +55,21 @@ function Login({updateUserDetails}) {
 
             // INTEGRATE WITH REST ENDPOINTS
 
-            await axios.post();
+           const body={
+            username:FormData.username,
+            password:FormData.password
+           };
+           const configuration={
+            withCredentials:true
+           };
+           try{
+           const response=await axios.post('http://localhost:5000/auth/login',
+            body,configuration
+           );
+           console.log(response);
+        }catch(error){
+            setErrors({message:'something went wrong, please try again'});
+        }
         }
     };
 
@@ -65,6 +79,7 @@ function Login({updateUserDetails}) {
       {message && (
         message
       )}
+      {errors.message && (errors.message) }
       <form onSubmit={handleSubmit}>
         <div>
             <label>UserName: </label>
