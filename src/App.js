@@ -7,6 +7,8 @@ import {useState} from 'react';
 import { Navigate,useNavigate } from 'react-router-dom';
 import axios from "axios";
 import {useEffect} from "react";
+import Error from './pages/Error';
+import Logout from './pages/Logout';
 function App() {
   const navigate=useNavigate();
     
@@ -34,6 +36,8 @@ function App() {
       <Route path="/" element={<AppLayout><Home/></AppLayout>}/>
       <Route path="/login" element={userDetails? <Navigate to='/dashboard' />:<AppLayout><Login updateUserDetails={updateUserDetails} /></AppLayout>}/>
       <Route path="/dashboard" element={userDetails?<Dashboard />: <Navigate to="/login" /> }/>
+      <Route path="/logout" element={userDetails ? <Logout updateUserDetails={updateUserDetails} />:<Navigate to="/login" />}/>
+     <Route path="/error" element={userDetails ? <Error />:<AppLayout><Error /></AppLayout>}/>
     </Routes>
   );
 }

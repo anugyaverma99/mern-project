@@ -66,7 +66,7 @@ function Login({updateUserDetails}) {
            const response=await axios.post('http://localhost:5000/auth/login',
             body,configuration
            );
-           console.log(response);
+           updateUserDetails(response.data.userDetails);
         }catch(error){
             setErrors({message:'something went wrong, please try again'});
         }
