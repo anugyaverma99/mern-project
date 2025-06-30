@@ -11,13 +11,13 @@ import Register from './pages/Register'
 import { serverEndpoint } from './config';
 import { useDispatch, useSelector } from 'react-redux';
 import UserLayout from "./layout/UserLayout";
-
+import Spinner from"./components/Spinner";
 function App() {
   const navigate = useNavigate();
 
   const userDetails = useSelector((state) => state.userDetails);
   const dispatch = useDispatch(); // ✅ FIXED useDispatch call
-
+const [loading,setLoading]=useState(true);
   const isUserLoggedIn = async () => {
     try {
       const response = await axios.post(
@@ -32,11 +32,17 @@ function App() {
     } catch (error) {
       console.log('User not logged in', error);
     }
+    finally{
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     isUserLoggedIn();
   }, []);
+  if(loading){
+    return <Spinner/>
+  }
 
   return (
     <Routes>
