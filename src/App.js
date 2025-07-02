@@ -12,6 +12,7 @@ import { serverEndpoint } from './config';
 import { useDispatch, useSelector } from 'react-redux';
 import UserLayout from "./layout/UserLayout";
 import Spinner from"./components/Spinner";
+import UserDashBoard from "./pages/Users/UserDashBoard";
 function App() {
   const navigate = useNavigate();
 
@@ -86,6 +87,10 @@ const [loading,setLoading]=useState(true);
           )
         }
       />
+      <Route path="/users" element={userDetails ? <UserLayout><UserDashBoard />
+      </UserLayout> : <Navigate to='/login' />
+       } />
+
 
       {/* LOGOUT ROUTE */}
       <Route
