@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 import { Modal } from 'react-bootstrap';
-import { serverEndpoint } from '../../config';
+import { serverEndpoint } from '../../config/config';
 
 function UserDashboard() {
   const [users, setUsers] = useState([]);

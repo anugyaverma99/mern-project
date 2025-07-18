@@ -4,11 +4,15 @@ import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
-import { serverEndpoint } from '../../config';
-import { useDispatch } from 'react-redux';
+import { serverEndpoint } from '../../config/config';
 import { Modal } from 'react-bootstrap';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import {usePermission} from '../../rbac/permissions';
+import {useNavigate} from 'react-router-dom';
 
 function LinkDashBoard() {
+  const navigate=useNavigate();
+  const permission=usePermission();
   const [errors, setErrors] = useState({});
   const [linksData, setLinksData] = useState([]);
   const [formData, setFormData] = useState({
@@ -20,7 +24,6 @@ function LinkDashBoard() {
   const [isEdit, setIsEdit] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const dispatch = useDispatch();
 
   const handleModalShow = (isEdit, data = {}) => {
     if (isEdit) {
@@ -122,8 +125,15 @@ function LinkDashBoard() {
       setFormData({ campaignTitle: '', originalUrl: '', category: '' });
       fetchLinks();
     } catch (error) {
+      if(error.respnse?.data?.code==='INSUFFICIENT_FUNDS'){
+        setErrors({
+          message: 'You do not have enough credits to perform this action. Add fund to your accounts using Manage Payments option'
+        });
+      }
+      else{
       setErrors({ message: 'Something went wrong, please try again' });
-    } finally {
+    }
+   } finally {
       handleModalClose();
     }
   };
@@ -167,6 +177,16 @@ function LinkDashBoard() {
           <IconButton onClick={() => handleDeleteModalShow(params.row._id)}>
             <DeleteIcon onclick={()=>handleDeleteModalShow(params.row._id)} />
           </IconButton>
+
+          {permission.canViewLink && (
+            <IconButton>
+              <AssessmentIcon onClick={()=>{
+                navigate(`/analytics/${params.row._id}`);
+              }}/>
+
+            </IconButton>
+
+          )}
         </>
       ),
     },

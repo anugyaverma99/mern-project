@@ -1,8 +1,12 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
+import Can from "../rbac/Can";
 function UserHeader() {
   const userDetails = useSelector((state) => state.userDetails);
+  console.log("userDetails from Redux:", userDetails);
+console.log("typeof userDetails.name:", typeof userDetails?.name);
+
+
 
   return (
     <nav className="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark">
@@ -30,21 +34,27 @@ function UserHeader() {
 
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                {userDetails ? userDetails.name : "Account"}
-              </a>
+              <Link
+  className="nav-link dropdown-toggle"
+  href="#"
+  role="button"
+  data-bs-toggle="dropdown"
+  aria-expanded="false"
+  onClick={(e) => e.preventDefault()}>
+    {userDetails?.name || "Account"}
+
+  
+
+</Link>
+
               <ul className="dropdown-menu dropdown-menu-end">
                 <li>
                   <Link className="dropdown-item" to="/users">Manage Users</Link>
                   </li>
-                  <hr className="m-0"
-/>
+                  <li>
+                    <Link className="dropdown-item" to="/manage-payment">Payments</Link>
+                     </li>
+                      <hr className="m-0" />
 
                 <li>
                   <Link className="dropdown-item" to="/logout">

@@ -1,18 +1,24 @@
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
-import Home from './Home';
-import Login from './Login';
+import Home from './pages/Home';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { useState, useEffect } from 'react';
 import axios from "axios";
 import Error from './pages/Error';
 import Logout from './pages/Logout';
 import Register from './pages/Register'
-import { serverEndpoint } from './config';
+import { serverEndpoint } from './config/config';
 import { useDispatch, useSelector } from 'react-redux';
 import UserLayout from "./layout/UserLayout";
 import Spinner from"./components/Spinner";
 import UserDashBoard from "./pages/Users/UserDashBoard";
+import ProtectedRoute from "./rbac/ProtectedRoute";
+import UnauthorizedAccess from "./components/UnauthorizedAccess";
+import ManagePayments from "./pages/payments/ManagePayments";
+import AnalyticsDashboard from "./pages/links/AnalyticsDashboard";
+import ForgetPassword from "./pages/ForgetPassword";
+import ResetPassword from "./pages/ResetPassword";
 function App() {
   const navigate = useNavigate();
 
@@ -21,9 +27,9 @@ function App() {
 const [loading,setLoading]=useState(true);
   const isUserLoggedIn = async () => {
     try {
-      const response = await axios.post(
+      const response = await axios.get(
         `${serverEndpoint}/auth/is-user-logged-in`,
-        {},
+        
         { withCredentials: true }
       );
       dispatch({
@@ -87,9 +93,16 @@ const [loading,setLoading]=useState(true);
           )
         }
       />
-      <Route path="/users" element={userDetails ? <UserLayout><UserDashBoard />
-      </UserLayout> : <Navigate to='/login' />
+      <Route path="/users" element={userDetails ? 
+      <ProtectedRoute roles={['admin']}>
+      <UserLayout><UserDashBoard />
+      </UserLayout> 
+      </ProtectedRoute>: <Navigate to='/login' />
        } />
+
+       <Route path="/unauthorized-access" element={userDetails?
+        <UserLayout> <UnauthorizedAccess/></UserLayout>:<Navigate to="/login"/>
+       }/>
 
 
       {/* LOGOUT ROUTE */}
@@ -111,6 +124,26 @@ const [loading,setLoading]=useState(true);
           )
         }
       />
+      <Route path="/manage-payment" element={userDetails ?
+              <UserLayout>
+                <ManagePayments />
+              </UserLayout> :
+              <Navigate to='/login' />
+            } />
+      
+      <Route path="/analytics/:linkId" element={userDetails?
+        <UserLayout>
+          <AnalyticsDashboard/>
+        </UserLayout>:<Navigate to="/login"/>
+      }/>
+
+      <Route path="/forget-password" element={<ForgetPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+
+
+
+
+
     </Routes>
   );
 }

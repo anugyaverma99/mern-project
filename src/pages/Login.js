@@ -1,64 +1,52 @@
-import { useState } from "react";
+import React, { useState } from 'react';
 import axios from 'axios';
+import { serverEndpoint } from '../config/config';
+import { useDispatch } from 'react-redux';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { serverEndpoint } from "../config/config";
-import { useDispatch } from "react-redux";
-import { SET_USER } from "../redux/user/actions";
 
-function Register() {
+function Login({ updateUserDetails }) {
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    name: ""
-  });
 
+  const [FormData, setFormData] = useState({ username: '', password: '' });
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState(null);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...FormData, [name]: value });
   };
 
   const validate = () => {
     let newErrors = {};
     let isValid = true;
-
-    if (formData.username.trim() === "") {
-      newErrors.username = "Username is mandatory";
+    if (FormData.username.trim() === '') {
+      newErrors.username = 'Username is mandatory';
       isValid = false;
     }
-    if (formData.password.trim() === "") {
-      newErrors.password = "Password is mandatory";
+    if (FormData.password.trim() === '') {
+      newErrors.password = 'Password is mandatory';
       isValid = false;
     }
-    if (formData.name.trim() === "") {
-      newErrors.name = "Name is mandatory";
-      isValid = false;
-    }
-
     setErrors(newErrors);
     return isValid;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (validate()) {
       try {
         const response = await axios.post(
-          `${serverEndpoint}/auth/register`,
-          formData,
+          `${serverEndpoint}/auth/login`,
+          { username: FormData.username, password: FormData.password },
           { withCredentials: true }
         );
-
-        dispatch({ type: SET_USER, payload: response.data.userDetails });
+        dispatch({ type: 'SET_USER', payload: response.data.userDetails });
       } catch (error) {
         setErrors({
           message:
             error?.response?.status === 401
-              ? 'User already exists with this email.'
-              : 'Something went wrong, please try again.'
+              ? 'Invalid credentials'
+              : 'Something went wrong, please try again',
         });
       }
     }
@@ -71,18 +59,17 @@ function Register() {
         { idToken: authResponse.credential },
         { withCredentials: true }
       );
-
-      dispatch({ type: SET_USER, payload: response.data.userDetails });
+      dispatch({ type: 'SET_USER', payload: response.data.userDetails });
     } catch (error) {
-      setErrors({ message: 'Something went wrong during Google Sign-in' });
+      setErrors({ message: 'Something went wrong with Google sign-in' });
     }
   };
 
   const handleGoogleSigninFailure = () => {
-    setErrors({ message: 'Google Sign-in failed' });
+    setErrors({ message: 'Something went wrong while Google sign-in' });
   };
 
-  // ✅ Soft background gradient
+  // ✅ Softer background gradient
   const pageStyle = {
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #e0eafc, #cfdef3)',
@@ -95,7 +82,7 @@ function Register() {
   return (
     <div style={pageStyle}>
       <div className="card p-4 shadow-lg border-0" style={{ width: '100%', maxWidth: '420px', borderRadius: '16px' }}>
-        <h2 className="text-center mb-4 fw-bold text-primary">Sign up</h2>
+        <h2 className="text-center mb-4 fw-bold text-primary">Login</h2>
 
         {errors.message && (
           <div className="alert alert-danger" role="alert">
@@ -105,26 +92,13 @@ function Register() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="mb-3">
-            <label htmlFor="name" className="form-label fw-semibold">Name</label>
-            <input
-              type="text"
-              className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-            />
-            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-          </div>
-
-          <div className="mb-3">
             <label htmlFor="username" className="form-label fw-semibold">Username</label>
             <input
               type="text"
               className={`form-control ${errors.username ? 'is-invalid' : ''}`}
               id="username"
               name="username"
-              value={formData.username}
+              value={FormData.username}
               onChange={handleChange}
             />
             {errors.username && <div className="invalid-feedback">{errors.username}</div>}
@@ -137,14 +111,20 @@ function Register() {
               className={`form-control ${errors.password ? 'is-invalid' : ''}`}
               id="password"
               name="password"
-              value={formData.password}
+              value={FormData.password}
               onChange={handleChange}
             />
             {errors.password && <div className="invalid-feedback">{errors.password}</div>}
           </div>
+          <div className="mb-3 text-end">
+  <a href="/forget-password" className="text-decoration-none text-primary fw-medium">
+    Forgot Password?
+  </a>
+</div>
+
 
           <div className="d-grid mb-3">
-            <button type="submit" className="btn btn-primary fw-semibold py-2">Register</button>
+            <button type="submit" className="btn btn-primary fw-semibold py-2">Login</button>
           </div>
         </form>
 
@@ -165,4 +145,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Login;
